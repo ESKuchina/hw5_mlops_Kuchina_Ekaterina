@@ -64,3 +64,53 @@ scikit-learn — обучение модели
 pandas — обработка табличных данных  
 Marimo — пример альтернативы классическому ноутбуку  
 Feast — для этапа Feature Store
+
+## Feature Store
+
+В проекте также реализовано хранилище признаков на Feast с использованием PostgreSQL.
+
+Конфигурация Feature Store находится в папке:
+feature_repo/feature_repo
+
+Для инициализации и применения конфигурации использовался шаблон Postgres. В качестве online store и offline store используется PostgreSQL, запущенный локально в Docker.
+
+### Как запустить Feature Store
+
+1. Запустить контейнер PostgreSQL:
+docker run --name feast-postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=feast \
+  -p 5433:5432 \
+  -d postgres:16
+
+2. Перейти в папку feature repository:
+cd feature_repo/feature_repo
+
+3. Применить конфигурацию Feast:
+feast apply
+
+4. Материализовать признаки в online store:
+feast materialize 2026-04-24T21:00:00 2026-04-26T21:15:00
+
+5. Запустить feature server:
+feast serve
+
+### Как проверить endpoint
+
+Пример запроса к endpoint:
+
+curl -X POST "http://127.0.0.1:6566/get-online-features" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "features": [
+      "driver_hourly_stats:conv_rate",
+      "driver_hourly_stats:acc_rate",
+      "driver_hourly_stats:avg_daily_trips"
+    ],
+    "entities": {
+      "driver_id": [1001, 1003, 1005]
+    }
+  }'
+
+В ответе возвращаются значения признаков для указанных driver_id. Это подтверждает, что Feature Store не только настроен, но и отдает данные через endpoint.
