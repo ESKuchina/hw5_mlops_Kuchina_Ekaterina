@@ -1,0 +1,28 @@
+project: feature_repo
+provider: local
+registry:
+    registry_type: sql
+    path: postgresql://postgres:postgres@localhost:5433/feast?sslmode=disable
+    cache_ttl_seconds: 60
+    sqlalchemy_config_kwargs:
+        echo: false
+        pool_pre_ping: true
+online_store:
+    type: postgres
+    host: localhost
+    port: 5433
+    database: feast
+    db_schema: public
+    user: postgres
+    password: postgres
+    sslmode: disable
+offline_store:
+    type: postgres
+    host: localhost
+    port: 5433
+    database: feast
+    db_schema: public
+    user: postgres
+    password: postgres
+    sslmode: disable
+entity_key_serialization_version: 3
