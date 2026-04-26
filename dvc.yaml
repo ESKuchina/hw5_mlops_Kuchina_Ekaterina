@@ -1,0 +1,21 @@
+stages:
+  prepare:
+    cmd: python3 src/prepare.py
+    deps:
+    - data/raw/data.csv
+    - params.yaml
+    - src/prepare.py
+    outs:
+    - data/processed
+  train:
+    cmd: python3 src/train.py
+    deps:
+    - data/processed/test.csv
+    - data/processed/train.csv
+    - params.yaml
+    - src/train.py
+    outs:
+    - models/model.pkl
+    metrics:
+    - metrics.json:
+        cache: false
